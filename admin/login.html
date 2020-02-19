@@ -38,6 +38,76 @@
     </div>
   </div>
 
+  <!-- 模态框html结构 -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+              aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">温馨提示:</h4>
+        </div>
+        <div class="modal-body">
+          用户名或密码不能为空!
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">确定</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./libs/https.js"></script>
+  <script>
+    // 入口函数
+    $(function () {
+      // 登录点击事件
+      $('.input_sub').on('click', function (e) {
+        // 阻止表单默认刷新
+        e.preventDefault();
+        // 获取输入框文本内容
+        var userName = $('.input_txt').val().trim();
+        var password = $('.input_pass').val().trim();
+        // 非空判断
+        if (userName == "" || password == "") {
+          // 调用模态框
+          $('.modal-body').text('用户名或密码不能为空!');
+          $('#myModal').modal();
+          return;
+        };
+        // 发生ajax请求验证用户名密码
+        $.ajax({
+          type: 'post',
+          url: bigNews.user_login,
+          data: {
+            username: userName,
+            password: password,
+          },
+          success: function (backData) {
+            if (backData.code == 200) {
+              // 调用模态框
+              $('.modal-body').text(backData.msg);
+              $('#myModal').modal();
+              // 页面跳转到首页
+              $('#myModal').on('hidden.bs.modal', function (e) {
+                window.location.href = './index.html';
+              });
+              // 保存token令牌到本地
+              window.localStorage.setItem('token', backData.token);
+            } else {
+              // 调用模态框
+              $('.modal-body').text(backData.msg);
+              $('#myModal').modal();
+            }
+          },
+        });
+      })
+    })
+
+
+
+  </script>
+
 </body>
 
 </html>
